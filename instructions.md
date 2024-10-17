@@ -1,3 +1,5 @@
 # instructions
 
-If you want to explain how your work should be interacted with, or if there are any complicated or hidden features, feel free to explain them here.
+- Need a webcam
+- Need good lighting
+- Need to take off glasses (needs to be able to see your eyes)

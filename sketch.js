@@ -1,18 +1,174 @@
+// Blink logic inspired by 
+// Using the handsfreejs library https://handsfreejs.netlify.app/ 
+// https://storage.googleapis.com/tfjs-models/demos/facemesh/demo.fd0b9f10.js
+// https://age2death.glitch.me/
+// https://editor.p5js.org/golan/sketches/d-JfFcGws
+// alongside
+// https://editor.p5js.org/bestesaylar/sketches/ogFdasRIc
+// https://github.com/auduno/clmtrackr
+
+let handsfreeTracker; 
+let webcamStream;
+
+let blinkHistory = [];
+const historyLength = 320; 
+let eyeOpennessAvg = 0; 
+let blinkIntensity = 0; 
+let blinkCount = 0; // Track the number of blinks
+let lastBlinkTime = 0; // Track time of last blink
+const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
+
+let debuggerMode = false; // Toggle for showing debug visuals
+let modelLoaded = false; // Track if the model is loaded
+let blinkDetected = false; // Track if a blink has occurred
+
 function setup() {
-  // create the canvas using the full browser window
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(640, 480);
+
+  // Initialize blink history
+  blinkHistory = Array(historyLength).fill(0.1);
+
+  // Set up webcam feed
+  webcamStream = createCapture(VIDEO);
+  webcamStream.size(640, 480);
+  webcamStream.hide();
+
+  // Init handsfree.js to track face
+  handsfreeTracker = new Handsfree({
+    hands: false,  
+    pose: false,   
+    facemesh: true
+  });
+
+  handsfreeTracker.start(() => {
+    modelLoaded = true; // Set to true when the model is fully loaded
+  });
+
+  handsfreeTracker.hideDebugger();
 }
 
 function draw() {
-  // your cool abstract sonic artwork code goes in this draw function
-  
+  background(255);
+
+  // If the model is still loading, display "Loading..."
+  if (!modelLoaded) {
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text("Loading...", width / 2, height / 2);
+    return; // Skip the rest of the draw loop until model is loaded
+  }
+
+  // Once the model is loaded, wait for a blink to continue
+  if (!blinkDetected) {
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text("Blink to continue", width / 2, height / 2);
+    processBlinkDetection();
+    return; // Skip the rest of the draw loop until blink is detected
+  }
+
+  // Once a blink is detected, show the webcam in full screen
+  if (blinkDetected) {
+    drawWebcamBackground();
+    processBlinkDetection();
+
+  }
+
+  // If debuggerMode is true, display additional visuals
+  if (debuggerMode) {
+    drawFaceLandmarks();
+    detectBlink();
+  }
 }
 
-// when you hit the spacebar, what's currently on the canvas will be saved (as a
-// "thumbnail.png" file) to your downloads folder.
-// make sure you add and commit the image to the root folder of this repo.
-function keyTyped() {
-  if (key === " ") {
-    saveCanvas("thumbnail.png");
+// Draw the webcam feed on the screen
+function drawWebcamBackground() {
+  push();
+  translate(width, 0);
+  scale(-1, 1); 
+  tint(255, 255, 255, 160); 
+  image(webcamStream, 0, 0, width, height);
+  pop();
+}
+
+// Draw the face vertices on the screen
+function drawFaceLandmarks() {
+  if (handsfreeTracker.data.facemesh && handsfreeTracker.data.facemesh.multiFaceLandmarks) {
+    let faceData = handsfreeTracker.data.facemesh.multiFaceLandmarks;
+    if (faceData.length > 0) {
+      let faceLandmarks = faceData[0]; 
+
+      stroke('black');
+      strokeWeight(1);
+      for (let i = 0; i < faceLandmarks.length; i++) {
+        let x = map(faceLandmarks[i].x, 0, 1, width, 0);
+        let y = map(faceLandmarks[i].y, 0, 1, 0, height);
+        circle(x, y, 0.5);
+      }
+    }
+  }
+}
+
+// Detect blinks based on eye openness
+function processBlinkDetection() {
+  if (handsfreeTracker.data.facemesh && handsfreeTracker.data.facemesh.multiFaceLandmarks) {
+    let faceData = handsfreeTracker.data.facemesh.multiFaceLandmarks;
+    if (faceData.length > 0) {
+      let faceLandmarks = faceData[0];
+
+      let eyesIndices = [
+        [33, 161, 160, 159, 158, 157, 173, 133, 155, 154, 153, 145, 144, 163, 7],
+        [362, 384, 385, 386, 387, 388, 466, 263, 249, 390, 373, 374, 380, 381, 382]
+      ];
+
+      let eyeOpenness = measureEyeOpenness(faceLandmarks, eyesIndices);
+
+      blinkHistory.shift();
+      blinkHistory.push(eyeOpenness);
+
+      updateBlinkStats();
+    }
+  }
+}
+
+// Measure the openness of the eyes
+function measureEyeOpenness(landmarks, eyeVertices) {
+  let eyePairs = [[159, 154], [158, 145], [385, 374], [386, 373]];
+  let totalDistance = 0;
+
+  for (let i = 0; i < eyePairs.length; i++) {
+    let pointA = landmarks[eyePairs[i][0]];
+    let pointB = landmarks[eyePairs[i][1]];
+    totalDistance += dist(pointA.x, pointA.y, pointB.x, pointB.y);
+  }
+  return totalDistance;
+}
+
+// Update running average and compute the standard deviation for blink detection
+function updateBlinkStats() {
+  let stdDev = 0;
+  eyeOpennessAvg = 0.95 * eyeOpennessAvg + 0.05 * blinkHistory[historyLength - 1];
+
+  for (let i = 0; i < historyLength; i++) {
+    stdDev += sq(blinkHistory[i] - eyeOpennessAvg);
+  }
+  stdDev = sqrt(stdDev / historyLength);
+
+  let threshold = eyeOpennessAvg - stdDev;
+  blinkIntensity = 0.9 * blinkIntensity;
+
+  // Check if a blink is detected and increment blink count with cooldown
+  if (blinkHistory[historyLength - 1] < threshold && blinkHistory[historyLength - 2] >= threshold) {
+    let currentTime = millis();
+    // Ensure cooldown between blinks
+    if (currentTime - lastBlinkTime > blinkCooldown) {
+      blinkIntensity = 1.0;
+      blinkCount++; // Increment blink count
+      lastBlinkTime = currentTime; // Update last blink time
+      print(`Blink #${blinkCount} detected at ${int(millis())} ms`);
+      blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
+    }
   }
 }
