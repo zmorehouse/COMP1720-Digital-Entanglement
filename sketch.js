@@ -18,7 +18,7 @@ let blinkCount = 0; // Track the number of blinks
 let lastBlinkTime = 0; // Track time of last blink
 const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
 
-let debuggerMode = false; // Toggle for showing debug visuals
+let debuggerMode = true; // Toggle for showing debug visuals
 let modelLoaded = false; // Track if the model is loaded
 let blinkDetected = false; // Track if a blink has occurred
 
@@ -171,4 +171,32 @@ function updateBlinkStats() {
       blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
     }
   }
+}
+
+function detectBlink() {
+  let historyScale = 500; 
+
+  push();
+  translate(0, 100); 
+
+  let baseGray = color(200, 200, 200);
+  let highlightRed = color(255, 0, 0);
+  fill(lerpColor(baseGray, highlightRed, blinkIntensity));
+
+  noStroke();
+  rect(0, 0, width, 100);
+
+  noFill();
+  stroke(0);
+  beginShape();
+  for (let i = 0; i < historyLength - 1; i++) {
+    let x = i;
+    let y = blinkHistory[i] * historyScale;
+    vertex(x, y);
+  }
+  endShape();
+
+  stroke(0, 0, 0, 64);
+  line(0, eyeOpennessAvg * historyScale, width, eyeOpennessAvg * historyScale);
+  pop();
 }
