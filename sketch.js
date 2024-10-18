@@ -18,13 +18,16 @@ let blinkCount = 0; // Track the number of blinks
 let lastBlinkTime = 0; // Track time of last blink
 const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
 
-let debuggerMode = true; // Toggle for showing debug visuals
+let debuggerMode = false; // Toggle for showing debug visuals
 let modelLoaded = false; // Track if the model is loaded
 let blinkDetected = false; // Track if a blink has occurred
 
 function setup() {
-  createCanvas(640, 480);
-
+  if (debuggerMode) {
+    createCanvas(640, 480);
+  } else {   
+  createCanvas(windowWidth, windowHeight);
+  }
   // Initialize blink history
   blinkHistory = Array(historyLength).fill(0.1);
 
