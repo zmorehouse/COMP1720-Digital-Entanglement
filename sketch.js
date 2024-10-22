@@ -9,6 +9,7 @@
 
 let handsfreeTracker; 
 let webcamStream;
+let currentScene = 0;
 
 let blinkHistory = [];
 const historyLength = 320; 
@@ -17,7 +18,7 @@ let blinkIntensity = 0;
 let blinkCount = 0; // Track the number of blinks
 let lastBlinkTime = 0; // Track time of last blink
 const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
-const spacebarCooldown = 1000; // Cooldown time for spacebar presses (1 second)
+const spacebarCooldown = 300; // Cooldown time for spacebar presses (1 second)
 
 let debuggerMode = false; // Toggle for showing debug visuals
 let modelLoaded = false; // Track if the model is loaded
@@ -52,45 +53,64 @@ function setup() {
   handsfreeTracker.hideDebugger();
 }
 
-function draw() {
-  background(255);
+  function draw() {
+    background(0);
 
-  // If the model is still loading, display "Loading..."
-  if (!modelLoaded) {
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(24);
-    text("Loading...", width / 2, height / 2);
-    return; // Skip the rest of the draw loop until model is loaded
+    // If the model is still loading, display "Loading..."
+    if (!modelLoaded) {
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textSize(24);
+      text("Loading...", width / 2, height / 2);
+      return; // Skip the rest of the draw loop until model is loaded
+    }
+
+    // Once the model is loaded, wait for a blink to continue
+    if (!blinkDetected) {
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textSize(24);
+      text("Blink to begin the artwork", width / 2, height / 2);
+      processBlinkDetection();
+      return; // Skip the rest of the draw loop until blink is detected
+    }
+
+    // Once a blink is detected, show the webcam in full screen
+    if (blinkDetected) {
+      drawWebcamBackground();
+      processBlinkDetection();
+
+      let faderLevel = map(blinkIntensity, 1, 0, 0, 255);
+      tint(faderLevel); // Apply tint to the webcam feed
+
+      
+      switch (currentScene) {
+        case 0:
+          // No effect
+          break;
+        case 1:
+          // Scan Lines
+          stroke(255, 50); // Light gray color for scan lines
+          for (let y = 0; y < height; y += 5) { // Line spacing
+            line(0, y, width, y);
+          }
+          break;
+      }
+
+    }
+
+    if (debuggerMode) {
+      drawFaceLandmarks();
+      detectBlink();
+    }
   }
 
-  // Once the model is loaded, wait for a blink to continue
-  if (!blinkDetected) {
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(24);
-    text("Blink to continue", width / 2, height / 2);
-    processBlinkDetection();
-    return; // Skip the rest of the draw loop until blink is detected
-  }
-
-  // Once a blink is detected, show the webcam in full screen
-  if (blinkDetected) {
-    drawWebcamBackground();
-    processBlinkDetection();
-
-  }
-
-  if (debuggerMode) {
-    drawFaceLandmarks();
-    detectBlink();
-  }
-}
-
-// Draw the webcam feed on the screen
 function drawWebcamBackground() {
   push();
   
+  // Define the padding value
+  let padding = 75;
+
   // Calculate aspect ratio of webcam stream
   let webcamAspect = webcamStream.width / webcamStream.height;
   let canvasAspect = width / height;
@@ -99,28 +119,49 @@ function drawWebcamBackground() {
 
   // Check if the canvas is wider or taller than the webcam aspect ratio
   if (canvasAspect > webcamAspect) {
-    // Canvas is wider, fit by height
-    newHeight = height;
-    newWidth = height * webcamAspect;
+    // Canvas is wider, fit by height and apply padding on width
+    newHeight = height - 2 * padding;
+    newWidth = newHeight * webcamAspect;
   } else {
-    // Canvas is taller, fit by width
-    newWidth = width;
-    newHeight = width / webcamAspect;
+    // Canvas is taller, fit by width and apply padding on height
+    newWidth = width - 2 * padding;
+    newHeight = newWidth / webcamAspect;
   }
 
   // Center the webcam image
   let x = (width - newWidth) / 2;
   let y = (height - newHeight) / 2;
 
-  // Transform and draw the webcam image
-  translate(x, y);
-  tint(255, 255, 255, 160); 
-  image(webcamStream, 0, 0, newWidth, newHeight);
+  // Draw the gradient tunnel effect
+  drawGradientTunnel(x, y, newWidth, newHeight);
+
+  // Draw the webcam feed
+  image(webcamStream, x, y, newWidth, newHeight);
   
   pop();
 }
 
+// Function to create a gradient around the webcam feed
+function drawGradientTunnel(x, y, w, h) {
+  let gradientSteps = 20;  // Number of steps for the gradient
 
+  let innerColor = color(255, 255, 255, 150); // Lighter inner color (semi-transparent white)
+  let outerColor = color(0, 0, 0, 200); // Darker outer color (near-black)
+
+  for (let i = 0; i < gradientSteps; i++) {
+    let t = i / gradientSteps;
+
+    // Lerp between inner and outer colors
+    let currentColor = lerpColor(innerColor, outerColor, t);
+
+    stroke(currentColor);
+    strokeWeight(1);
+    noFill();
+
+    // Draw the rectangle slightly larger each time to create the gradient effect
+    rect(x - i * 5, y - i * 5, w + i * 10, h + i * 10);
+  }
+}
 
 // Draw the face vertices on the screen
 function drawFaceLandmarks() {
@@ -198,6 +239,7 @@ function updateBlinkStats() {
       lastBlinkTime = currentTime; // Update last blink time
       print(`Blink #${blinkCount} detected at ${int(millis())} ms`);
       blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
+      currentScene++
     }
   }
 }
@@ -234,8 +276,11 @@ function keyPressed() {
   let currentTime = millis();
 
   if (key === ' ' && currentTime - lastSpacebarPress > spacebarCooldown) {
-    blinkCount++; 
-    lastSpacebarPress = currentTime; 
+    blinkIntensity = 1.0;
+    blinkCount++; // Increment blink count
+    lastBlinkTime = currentTime; // Update last blink time
+    blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
+    currentScene++
     print(`Blink #${blinkCount} incremented using spacebar at ${int(currentTime)} ms`);
   }
 }
