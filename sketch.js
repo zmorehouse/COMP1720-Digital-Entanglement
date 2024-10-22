@@ -17,10 +17,12 @@ let blinkIntensity = 0;
 let blinkCount = 0; // Track the number of blinks
 let lastBlinkTime = 0; // Track time of last blink
 const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
+const spacebarCooldown = 1000; // Cooldown time for spacebar presses (1 second)
 
 let debuggerMode = false; // Toggle for showing debug visuals
 let modelLoaded = false; // Track if the model is loaded
 let blinkDetected = false; // Track if a blink has occurred
+let lastSpacebarPress = 0; // Track time of last spacebar press
 
 function setup() {
   if (debuggerMode) {
@@ -33,7 +35,7 @@ function setup() {
 
   // Set up webcam feed
   webcamStream = createCapture(VIDEO);
-  webcamStream.size(640, 480);
+  webcamStream.size();
   webcamStream.hide();
 
   // Init handsfree.js to track face
@@ -79,7 +81,6 @@ function draw() {
 
   }
 
-  // If debuggerMode is true, display additional visuals
   if (debuggerMode) {
     drawFaceLandmarks();
     detectBlink();
@@ -89,12 +90,37 @@ function draw() {
 // Draw the webcam feed on the screen
 function drawWebcamBackground() {
   push();
-  translate(width, 0);
-  scale(-1, 1); 
+  
+  // Calculate aspect ratio of webcam stream
+  let webcamAspect = webcamStream.width / webcamStream.height;
+  let canvasAspect = width / height;
+
+  let newWidth, newHeight;
+
+  // Check if the canvas is wider or taller than the webcam aspect ratio
+  if (canvasAspect > webcamAspect) {
+    // Canvas is wider, fit by height
+    newHeight = height;
+    newWidth = height * webcamAspect;
+  } else {
+    // Canvas is taller, fit by width
+    newWidth = width;
+    newHeight = width / webcamAspect;
+  }
+
+  // Center the webcam image
+  let x = (width - newWidth) / 2;
+  let y = (height - newHeight) / 2;
+
+  // Transform and draw the webcam image
+  translate(x, y);
   tint(255, 255, 255, 160); 
-  image(webcamStream, 0, 0, width, height);
+  image(webcamStream, 0, 0, newWidth, newHeight);
+  
   pop();
 }
+
+
 
 // Draw the face vertices on the screen
 function drawFaceLandmarks() {
@@ -202,4 +228,14 @@ function detectBlink() {
   stroke(0, 0, 0, 64);
   line(0, eyeOpennessAvg * historyScale, width, eyeOpennessAvg * historyScale);
   pop();
+}
+
+function keyPressed() {
+  let currentTime = millis();
+
+  if (key === ' ' && currentTime - lastSpacebarPress > spacebarCooldown) {
+    blinkCount++; 
+    lastSpacebarPress = currentTime; 
+    print(`Blink #${blinkCount} incremented using spacebar at ${int(currentTime)} ms`);
+  }
 }
