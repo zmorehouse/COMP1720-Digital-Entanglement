@@ -80,7 +80,7 @@ function draw() {
   if (!modelLoaded) {
     fill(255);
     textAlign(CENTER, CENTER);
-    textSize(24);
+    textSize(40);
     text("Loading...", width / 2, height / 2);
     return; // Skip the rest of the draw loop until model is loaded
   }
@@ -89,8 +89,12 @@ function draw() {
   if (!blinkDetected) {
     fill(255);
     textAlign(CENTER, CENTER);
-    textSize(24);
+    textSize(40);
     text("Blink to begin the artwork", width / 2, height / 2);
+    textSize(20);
+
+    text("Or Press Spacebar.", width / 2, height / 2 + 50);
+
     processBlinkDetection();
     return; // Skip the rest of the draw loop until blink is detected
   }
@@ -131,6 +135,8 @@ function draw() {
     textSize(32);
     textAlign(CENTER, CENTER);
     text(currentText.substring(0, charIndex), width / 2, textY);
+
+    drawBlinkCountOnWebcamFrame();
   }
 
   if (debuggerMode) {
@@ -138,6 +144,36 @@ function draw() {
     detectBlink();
   }
 }
+
+
+function drawBlinkCountOnWebcamFrame() {
+  // Define the padding value (same as the webcam frame's padding)
+  let padding = 75;
+
+  // Calculate aspect ratio of webcam stream
+  let webcamAspect = webcamStream.width / webcamStream.height;
+
+  // Get new width and height of the webcam frame (same as in drawWebcamBackground)
+  let newWidth, newHeight;
+  if (width / height > webcamAspect) {
+    newHeight = height - 2 * padding;
+    newWidth = newHeight * webcamAspect;
+  } else {
+    newWidth = width - 2 * padding;
+    newHeight = newWidth / webcamAspect;
+  }
+
+  // Center the webcam image
+  let x = (width - newWidth) / 2;
+  let y = (height - newHeight) / 2;
+
+  // Set the blink count position relative to the bottom-left of the webcam frame
+  fill(255);
+  textSize(32); // Match font size
+  textAlign(LEFT, BOTTOM);
+  text(` ${blinkCount}`, x + 20, y + newHeight - 27); // Offset 20px from left and bottom of the webcam frame
+}
+
 
 function drawWebcamBackground() {
   push();
@@ -168,6 +204,7 @@ function drawWebcamBackground() {
 
   textY = y + newHeight - 50;
 
+  
   // Draw the gradient tunnel effect
   drawGradientTunnel(x, y, newWidth, newHeight);
 
