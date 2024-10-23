@@ -25,12 +25,32 @@ let modelLoaded = false; // Track if the model is loaded
 let blinkDetected = false; // Track if a blink has occurred
 let lastSpacebarPress = 0; // Track time of last spacebar press
 
+let textLines = [
+  "This is the first line.",
+  "Another blink another thought.",
+  "Reality blurs digital distorts.",
+  "You are more than pixels.",
+  "The screen is not your prison.",
+  "A final blink...what do you see?"
+];
+
+let textY;  
+
+let textIndex = 0;
+let charIndex = 0; // Tracks the character being typed
+let typingSpeed = 100; // Speed of typing effect (in milliseconds)
+let lastTypedTime = 0; // Tracks the time of the last character typed
+function preload() {
+  BusMatrixFont = loadFont('/assets/BusMatrixCondensed-Condensed.ttf');
+}
 function setup() {
   if (debuggerMode) {
     createCanvas(640, 480);
   } else {   
-  createCanvas(windowWidth, windowHeight);
+    createCanvas(windowWidth, windowHeight);
   }
+  
+  textFont(BusMatrixFont);
   // Initialize blink history
   blinkHistory = Array(historyLength).fill(0.1);
 
@@ -53,57 +73,71 @@ function setup() {
   handsfreeTracker.hideDebugger();
 }
 
-  function draw() {
-    background(0);
+function draw() {
+  background(0);
 
-    // If the model is still loading, display "Loading..."
-    if (!modelLoaded) {
-      fill(255);
-      textAlign(CENTER, CENTER);
-      textSize(24);
-      text("Loading...", width / 2, height / 2);
-      return; // Skip the rest of the draw loop until model is loaded
-    }
-
-    // Once the model is loaded, wait for a blink to continue
-    if (!blinkDetected) {
-      fill(255);
-      textAlign(CENTER, CENTER);
-      textSize(24);
-      text("Blink to begin the artwork", width / 2, height / 2);
-      processBlinkDetection();
-      return; // Skip the rest of the draw loop until blink is detected
-    }
-
-    // Once a blink is detected, show the webcam in full screen
-    if (blinkDetected) {
-      drawWebcamBackground();
-      processBlinkDetection();
-
-      let faderLevel = map(blinkIntensity, 1, 0, 0, 255);
-      tint(faderLevel); // Apply tint to the webcam feed
-
-      
-      switch (currentScene) {
-        case 0:
-          // No effect
-          break;
-        case 1:
-          // Scan Lines
-          stroke(255, 50); // Light gray color for scan lines
-          for (let y = 0; y < height; y += 5) { // Line spacing
-            line(0, y, width, y);
-          }
-          break;
-      }
-
-    }
-
-    if (debuggerMode) {
-      drawFaceLandmarks();
-      detectBlink();
-    }
+  // If the model is still loading, display "Loading..."
+  if (!modelLoaded) {
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text("Loading...", width / 2, height / 2);
+    return; // Skip the rest of the draw loop until model is loaded
   }
+
+  // Once the model is loaded, wait for a blink to continue
+  if (!blinkDetected) {
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text("Blink to begin the artwork", width / 2, height / 2);
+    processBlinkDetection();
+    return; // Skip the rest of the draw loop until blink is detected
+  }
+
+  // Once a blink is detected, show the webcam in full screen
+  if (blinkDetected) {
+    drawWebcamBackground();
+    processBlinkDetection();
+
+    let faderLevel = map(blinkIntensity, 1, 0, 0, 255);
+    tint(faderLevel); // Apply tint to the webcam feed
+    switch (currentScene) {
+      case 0:
+        // No effect
+        break;
+      case 1:
+        // Scan Lines
+        stroke(255, 50); // Light gray color for scan lines
+        for (let y = 0; y < height; y += 5) { // Line spacing
+          line(0, y, width, y);
+        }
+        break;
+    }
+
+    // Handle the typing animation
+    let currentText = textLines[textIndex];
+
+    // Calculate the current time and compare with the last typed time
+    if (millis() - lastTypedTime > typingSpeed) {
+      if (charIndex < currentText.length) {
+        charIndex++;
+      }
+      lastTypedTime = millis();
+    }
+
+    // Display the text progressively
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(currentText.substring(0, charIndex), width / 2, textY);
+  }
+
+  if (debuggerMode) {
+    drawFaceLandmarks();
+    detectBlink();
+  }
+}
 
 function drawWebcamBackground() {
   push();
@@ -131,6 +165,8 @@ function drawWebcamBackground() {
   // Center the webcam image
   let x = (width - newWidth) / 2;
   let y = (height - newHeight) / 2;
+
+  textY = y + newHeight - 50;
 
   // Draw the gradient tunnel effect
   drawGradientTunnel(x, y, newWidth, newHeight);
@@ -235,11 +271,16 @@ function updateBlinkStats() {
     // Ensure cooldown between blinks
     if (currentTime - lastBlinkTime > blinkCooldown) {
       blinkIntensity = 1.0;
-      blinkCount++; // Increment blink count
-      lastBlinkTime = currentTime; // Update last blink time
+      blinkCount++;
+      lastBlinkTime = currentTime;
       print(`Blink #${blinkCount} detected at ${int(millis())} ms`);
-      blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
-      currentScene++
+      blinkDetected = true;
+
+      if (textIndex < textLines.length - 1) {
+        charIndex = 0; // Reset charIndex when moving to a new line
+        textIndex++;    // Only increment if not at the last line
+        currentScene++;
+      }
     }
   }
 }
@@ -272,15 +313,21 @@ function detectBlink() {
   pop();
 }
 
+
 function keyPressed() {
   let currentTime = millis();
 
   if (key === ' ' && currentTime - lastSpacebarPress > spacebarCooldown) {
     blinkIntensity = 1.0;
-    blinkCount++; // Increment blink count
-    lastBlinkTime = currentTime; // Update last blink time
-    blinkDetected = true; // Set blinkDetected to true to trigger full-screen mode
-    currentScene++
+    blinkCount++;
+    lastBlinkTime = currentTime;
+    blinkDetected = true;
+
+    if (textIndex < textLines.length - 1) {
+      charIndex = 0;
+      textIndex++;
+      currentScene++;
+    }
     print(`Blink #${blinkCount} incremented using spacebar at ${int(currentTime)} ms`);
   }
 }
