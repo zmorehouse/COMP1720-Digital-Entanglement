@@ -25,21 +25,90 @@ let modelLoaded = false; // Track if the model is loaded
 let blinkDetected = false; // Track if a blink has occurred
 let lastSpacebarPress = 0; // Track time of last spacebar press
 
+/*
 let textLines = [
-  "This is the first line.",
-  "Another blink another thought.",
-  "Reality blurs digital distorts.",
-  "You are more than pixels.",
-  "The screen is not your prison.",
-  "A final blink...what do you see?"
+  "I wake to a world of endless screens,",
+  "Another blink and pixels shift,",
+  "Reality bends, digital distorts,",
+  "Each moment consumed by code and light,",
+  "Where is the boundary between me and machine?",
+  "A final blink... is this what I am?",
+  "More than a user, less than flesh,",
+  "Each click a step toward the void,",
+  "A labyrinth of data, and I am lost.",
+  "The glow is comforting, but is it real?",
+  "Consumed by connection, yet utterly alone.",
+  "A ceaseless stream, always watching, always pulling.",
+  "I am more than pixels, yet pixels I become.",
+  "The screen is not my prison, or is it?",
+  "A final blink... what do I see?"
 ];
+*/
+let textLines = [
+  "I work all day and get half-drunk at night",
+  "Waking at four to soundless dark I stare",
+  "In time the curtain-edges will grow light",
+  "Till then I see what’s really always there",
+  "Unresting death a whole day nearer now",
+  "Making all thought impossible but how",
+  "And where and when I shall myself die",
+  "Arid interrogation yet the dread",
+  "Of dying and being dead",
+  "Flashes afresh to hold and horrify",
+  "The mind blanks at the glare Not in remorse",
+  "The good not done the love not given time",
+  "Torn off unused nor wretchedly because",
+  "An only life can take so long to climb",
+  "Clear of its wrong beginnings and may never",
+  "But at the total emptiness for ever",
+  "The sure extinction that we travel to",
+  "And shall be lost in always Not to be here",
+  "Not to be anywhere",
+  "And soon nothing more terrible nothing more true",
+  "This is a special way of being afraid",
+  "No trick dispels Religion used to try",
+  "That vast moth-eaten musical brocade",
+  "Created to pretend we never die",
+  "And specious stuff that says No rational being",
+  "Can fear a thing it will not feel not seeing",
+  "That this is what we fear no sight no sound",
+  "No touch or taste or smell nothing to think with",
+  "Nothing to love or link with",
+  "The anaesthetic from which none come round",
+  "And so it stays just on the edge of vision",
+  "A small unfocused blur a standing chill",
+  "That slows each impulse down to indecision",
+  "Most things may never happen this one will",
+  "And realisation of it rages out",
+  "In furnace-fear when we are caught without",
+  "People or drink Courage is no good",
+  "It means not scaring others Being brave",
+  "Lets no one off the grave",
+  "Death is no different whined at than withstood",
+  "Slowly light strengthens and the room takes shape",
+  "It stands plain as a wardrobe what we know",
+  "Have always known know that we can’t escape",
+  "Yet can’t accept One side will have to go",
+  "Meanwhile telephones crouch getting ready to ring",
+  "In locked-up offices and all the uncaring",
+  "Intricate rented world begins to rouse",
+  "The sky is white as clay with no sun",
+  "Work has to be done",
+  "Postmen like doctors go from house to house"
+];
+
 
 let textY;  
 
 let textIndex = 0;
 let charIndex = 0; // Tracks the character being typed
-let typingSpeed = 100; // Speed of typing effect (in milliseconds)
+let typingSpeed = 50; // Speed of typing effect (in milliseconds)
 let lastTypedTime = 0; // Tracks the time of the last character typed
+
+let fadeIn = true; // Track whether we are in the fade-in or fade-out phase
+let fadeAlpha = 0; // Alpha value for fading
+
+
 function preload() {
   BusMatrixFont = loadFont('/assets/BusMatrixCondensed-Condensed.ttf');
 }
@@ -66,6 +135,8 @@ function setup() {
     facemesh: true
   });
 
+  
+
   handsfreeTracker.start(() => {
     modelLoaded = true; // Set to true when the model is fully loaded
   });
@@ -78,12 +149,28 @@ function draw() {
 
   // If the model is still loading, display "Loading..."
   if (!modelLoaded) {
-    fill(255);
+    if (fadeIn) {
+      fadeAlpha += 5; // Increase alpha value
+      if (fadeAlpha >= 255) {
+        fadeIn = false; // Switch to fade-out once fully opaque
+      }
+    } else {
+      fadeAlpha -= 5; // Decrease alpha value
+      if (fadeAlpha <= 0) {
+        fadeIn = true; // Switch to fade-in once fully transparent
+      }
+    }
+
+    // Ensure alpha value stays within bounds
+    fadeAlpha = constrain(fadeAlpha, 0, 255);
+
+    fill(255, fadeAlpha); // Apply the fade effect to the text
     textAlign(CENTER, CENTER);
     textSize(40);
     text("Loading...", width / 2, height / 2);
-    return; // Skip the rest of the draw loop until model is loaded
+    return;  // Skip the rest of the draw loop until the model is loaded
   }
+
 
   // Once the model is loaded, wait for a blink to continue
   if (!blinkDetected) {
@@ -106,16 +193,22 @@ function draw() {
 
     let faderLevel = map(blinkIntensity, 1, 0, 0, 255);
     tint(faderLevel); // Apply tint to the webcam feed
+
+    stroke(255, 15); // Light gray color for scan lines
+    for (let y = 0; y < height; y += 5) { // Line spacing
+      // Create a wave displacement based on the mouseX position
+      let bendAmount = map(mouseX, 0, width, -50, 50);  // Bend based on mouseX position (-50 to 50 range)
+      let offset = sin((y + frameCount) * 0.1) * bendAmount; // Sine wave controlled by frameCount and y position
+    
+      line(0 + offset, y, width + offset, y); // Apply the bend to the line
+    }
+
     switch (currentScene) {
       case 0:
         // No effect
         break;
       case 1:
-        // Scan Lines
-        stroke(255, 50); // Light gray color for scan lines
-        for (let y = 0; y < height; y += 5) { // Line spacing
-          line(0, y, width, y);
-        }
+
         break;
     }
 
