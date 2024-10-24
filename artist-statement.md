@@ -6,3 +6,6 @@ Answer the following:
 
 - How would you would like viewers to perceive the major project theme in your work?
 - How does interaction enhance the viewer’s experience?
+
+Phillip Larkin, Aubade
+alienation, existential dread, mechanical routine of modern life and technology

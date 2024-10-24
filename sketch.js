@@ -17,7 +17,7 @@ let eyeOpennessAvg = 0;
 let blinkIntensity = 0; 
 let blinkCount = 0;
 let lastBlinkTime = 0; 
-const blinkCooldown = 300; // Cooldown time in milliseconds between blinks
+const blinkCooldown = 500; // Cooldown time between blinks
 const spacebarCooldown = 300; // Cooldown time for spacebar presses 
 
 // Additional Scene and Model Logic + Debugger
@@ -30,13 +30,13 @@ let lastSpacebarPress = 0;
 // Text content and typing effect
 let textIndex = 0;
 let charIndex = 0; 
-let typingSpeed = 0; 
+let typingSpeed = 50; 
 let lastTypedTime = 0;
 let textY;  
 
 // Final text content and typing effect
 let finalText1 = "You blinked and the world rewrote itself.";
-let finalText2 = "Entangled in data streams. Are you still in control or just another line of code?";
+let finalText2 = "Entangled in digital streams. Are you still in control or just another line of code?";
 let finalCharIndex1 = 0;
 let finalCharIndex2 = 0;
 let finalTypingSpeed = 50; 
@@ -49,6 +49,9 @@ let isHovering = false;
 // Fading logic for Loading
 let fadeIn = true; 
 let fadeAlpha = 0; 
+
+let gradientSteps = 26;  
+
 
 /*
 let textLines = [
@@ -70,36 +73,36 @@ let textLines = [
 ];
 */
 
-// Aubade by Phillip Larkin
+// Phillip Larkin 
 let textLines = [
   " ",
-  "I work all day and get half-drunk at night",
-  "Waking at four to soundless dark I stare",
-  "In time the curtain-edges will grow light",
-  "Till then I see whats really always there",
+  "I work all day and get half-drunk at night.",
+  "Waking at four to soundless dark I stare.",
+  "In time the curtain-edges will grow light.",
+  "Till then I see whats really always there.",
 
-  "Unresting death a whole day nearer now",
-  "Making all thought impossible but how",
-  "And where and when I shall myself die",
-  "Arid interrogation yet the dread",
-  "Of dying and being dead",
+  "Unresting death a whole day nearer now.",
+  "Making all thought impossible but how.",
+  "And where and when I shall myself die.",
+  "Arid interrogation yet the dread.",
+  "Of dying and being dead.",
 
-  "Clear of its wrong beginnings and may never",
-  "But at the total emptiness for ever",
-  "The sure extinction that we travel to",
-  "And shall be lost in always Not to be here",
-  "Not to be anywhere",
+  "Clear of its wrong beginnings and may never.",
+  "But at the total emptiness for ever.",
+  "The sure extinction that we travel to.",
+  "And shall be lost in always Not to be here.",
+  "Not to be anywhere.",
 
-  "And specious stuff that says No rational being",
-  "Can fear a thing it will not feel not seeing",
-  "That this is what we fear no sight no sound",
-  "No touch or taste or smell nothing to think with",
-  "Nothing to love or link with",
+  "And specious stuff that says. No rational being.",
+  "Can fear a thing it will not feel not seeing.",
+  "That this is what we fear no sight no sound.",
+  "No touch or taste or smell nothing to think with.",
+  "Nothing to love or link with.",
 
-  "The anaesthetic from which none come round",
-  "And so it stays just on the edge of vision",
-  "A small unfocused blur a standing chill",
-  "That slows each impulse down to indecision",
+  "The anaesthetic from which none come round.",
+  "And so it stays just on the edge of vision.",
+  "A small unfocused blur a standing chill.",
+  "That slows each impulse down to indecision.",
   "Most things may never happen.",
   "This one will."
 ];
@@ -161,7 +164,7 @@ function draw() {
     fill(255, fadeAlpha); 
     textAlign(CENTER, CENTER);
     textSize(40);
-    text("Loading...", width / 2, height / 2);
+    text("Loading...", width / 2, height / 2 - 25);
     return;
   }
 
@@ -170,9 +173,9 @@ function draw() {
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(40);
-    text("Blink to begin the artwork", width / 2, height / 2);
-    textSize(20);
-    text("Or Press Spacebar.", width / 2, height / 2 + 50);
+    text("Blink to begin the artwork", width / 2, height / 2  - 50);
+    textSize(24);
+    text("Or press Spacebar.", width / 2, height / 2);
     processBlinkDetection();
     return;
   }
@@ -189,28 +192,60 @@ function draw() {
     drawWebcamBackground();
     processBlinkDetection();
 
-    let faderLevel = map(blinkIntensity, 1, 0, 0, 255);
-    tint(faderLevel); // Apply Tint
+    // Black fade after blink
+    let faderLevel = map(blinkIntensity, 1, 0, 0, 255) * 1.5;
+    tint(faderLevel);
 
-    stroke(255, 15); // Apply Scan Lines
-    for (let y = 0; y < height; y += 5) { 
-      let offset = sin((y + frameCount) * 0.1);
-      line(0 + offset, y, width + offset, y); 
-    }
 
+    /*
     // Posterize the feed as the sketch goes on
-    posterizecount = map(blinkCount, 0, 25, 15, 2);
-    posterizecount = constrain(posterizecount, 2, 15); 
+    posterizecount = map(blinkCount, 0, 25, 25, 2);
+    posterizecount = constrain(posterizecount, 2, 25); 
     filter(POSTERIZE, posterizecount);
+    */
 
     switch (currentScene) {
       case 0:
-        // Scene One
+        // Case 0 should be empty
       break;
       case 1:
-        // Scene Two
+
       break;
+
+      case 2:
+      break;
+      
+      case 3:
       // Cont until 25
+      break;
+
+      case 4:
+        
+      break;
+
+      case 5:
+        
+      break;
+
+      case 6:
+        
+      break;
+
+      case 7:
+        
+      break;
+
+      case 8:
+        
+      break;
+
+      case 9:
+        
+      break;
+
+      case 10:
+        
+      break;
           
     }
 
@@ -265,6 +300,13 @@ function drawBlinkCountOnWebcamFrame() {
   textSize(32); 
   textAlign(LEFT, BOTTOM);
   text(` ${blinkCount}`, x + 20, y + newHeight - 26); 
+
+
+  stroke(255, 15); 
+  for (let i = 0; i < newHeight; i += 5) {
+    let offset = sin((i + frameCount) * 0.1); 
+    line(x + offset, y + i, x + newWidth + offset, y + i); 
+  }
 }
 
 
@@ -299,13 +341,13 @@ function drawWebcamBackground() {
 
   // Draw the webcam feed
   image(webcamStream, x, y, newWidth, newHeight);
+
   
   pop();
 }
 
 // Function to create a tunnel around the webcam feed
 function drawGradientTunnel(x, y, w, h) {
-  let gradientSteps = 20;  
   let innerColor = color(255, 255, 255, 150);
   let outerColor = color(0, 0, 0, 200); 
 
@@ -392,6 +434,7 @@ function updateBlinkStats() {
     if (currentTime - lastBlinkTime > blinkCooldown) {
       blinkIntensity = 1.0;
       blinkCount++;
+      gradientSteps = gradientSteps - 1;
       lastBlinkTime = currentTime;
       print(`Blink #${blinkCount} detected at ${int(millis())} ms`);
       blinkDetected = true;
@@ -401,6 +444,7 @@ function updateBlinkStats() {
         textIndex++;    
         currentScene++;
       }
+
     }
   }
 }
@@ -444,6 +488,8 @@ function keyPressed() {
     blinkCount++;
     lastBlinkTime = currentTime;
     blinkDetected = true;
+    gradientSteps = gradientSteps - 1;
+
 
     if (textIndex < textLines.length - 1) {
       charIndex = 0;
@@ -534,4 +580,5 @@ function restartArtwork() {
   finalCharIndex2 = 0;
   finalTypingSpeed = 50; 
   finalLastTypedTime = 0;
+  gradientSteps = 26;
 }
