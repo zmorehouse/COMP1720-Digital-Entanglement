@@ -1,5 +1,5 @@
 // Digital Entanglement by Zac Morehouse - u7637337
-
+// Test - Script not uploading?
 // Useful variables as mentioned in my instructions.md - Feel free to modify! 
 let spacebarOnlyMode = false;
 let debuggerMode = false;
