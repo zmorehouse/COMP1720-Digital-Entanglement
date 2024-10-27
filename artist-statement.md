@@ -1,29 +1,13 @@
 # Artist Statement
 
-Write your artist statement in this file (max 300 words).
+*You blinked and the world rewrote itself. Are you still in control, or just another line of code?*
 
-Answer the following:
+My major project, Digital Entanglement, critiques society's increasing overreliance on digital technologies and their effect on our perception of reality. Unfolding across five scenes - each corresponding to a stanza from Philip Larkin’s Aubade - the artwork offers a contemporary exploration into themes of interdependence, existential dread, and postmodern alienation. Interpreted through a computational lens, the piece transforms these ideas into surreal digital landscapes where technology and reality intersect.
 
-- How would you would like viewers to perceive the major project theme in your work?
-- How does interaction enhance the viewer’s experience?
-Theme entangled realities
+Interaction lies at the heart of Digital Entanglement. Utilising data from the viewer’s camera, the piece invites users to experience how their own physical presence is depicted within digital environments. Crucially, the piece never reveals the user’s image directly; instead, it distorts and fragments their likeness, forcing the viewer to question what is real and what is simulated. Physical movement, both by the viewer and within the viewer’s environment, is encouraged - directly influencing what is displayed on screen and allowing individuals to experience a dynamic, real-time portrayal of how the digital realm can reshape and redefine one’s sense of self.
 
+Blinking - a typically subconscious action - is the driving force behind the piece, advancing the artwork through its many stages. This design choice constrains the work to the linearity of real time. Each blink symbolises a moment lost - an action that cannot be undone - emphasising the inevitability of progression and underscoring how every digital interaction leaves an indelible mark on us.
 
+Secondary gestures, such as mouse and keyboard inputs, are also available - introducing additional glitch effects and distortions. However, these have been kept intentionally subtle, serving a supportive role. In doing so, the artwork encourages viewers to engage primarily through physical movement, emphasising the significance of instinctive actions and demonstrating how real-world presence can actively shape and influence the digital environment.
 
-Poem : 
-Phillip Larkin, Aubade
-alienation, existential dread, mechanical routine of modern life and technology
-
-A response to the extremities of the digital realm, getting sucked in, our influence on it, 
-Time is linear you cannot return - represented by blinking and the tunnel that caves in around the user. 
-"You blinked and the world rewrote itself."; - filters on webcam, the digital effects the physical can you feel it effecting you.
-"Entangled in digital streams. Are you still in control or just another line of code?";
-
-By moving through 5 sets of 5 scenes the artwork represents different digital entaglements. It aims to offer a consistency with each scene having a general theme, that intensifies as the user goes through it. These relate to the stanzas of the poem
-
-steps through different realities / digital realities of the users. 
-
-
-Blink and you'll miss it!
-- Interaction is prompted through movement. The sketch is revolved around the user encouraging the user move and blinking
-THere is light interaction with the mouse but overall sketch wants to get ppl to move 
+In this way, Digital Entanglement presents a layered exploration of our complex relationship with technology, urging viewers to question whether we shape the digital world or if, increasingly, it shapes us.
