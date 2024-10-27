@@ -1,5 +1,5 @@
 // Digital Entanglement by Zac Morehouse - u7637337
-// Test - Script not uploading?
+
 // Useful variables as mentioned in my instructions.md - Feel free to modify! 
 let spacebarOnlyMode = false;
 let debuggerMode = false;
@@ -120,8 +120,8 @@ let spaceBarbuttonY;
 // Preload Func
 function preload() {
   // Load font and sound 
-  BusMatrixFont = loadFont('/assets/BusMatrixCondensed-Condensed.ttf');
-  ambienceSound = loadSound('/assets/computer-ambience.wav');
+  BusMatrixFont = loadFont('assets/BusMatrixCondensed-Condensed.ttf');
+  ambienceSound = loadSound('assets/computer-ambience.wav');
 }
 
 // Setup Function
