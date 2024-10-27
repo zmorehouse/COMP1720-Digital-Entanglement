@@ -8,7 +8,7 @@ let debuggerMode = false;
 let handsfreeTracker;
 let webcamStream;
 
-// Various vars for blink tracking
+// Various vars for blink tracking. This utilises handsfree.js to track the face and detect blinks.
 let blinkHistory = [];
 const historyLength = 320;
 let eyeOpennessAvg = 0;
