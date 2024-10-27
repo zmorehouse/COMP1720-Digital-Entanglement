@@ -179,7 +179,7 @@ function draw() {
 
     // If the model is still loading, display loading text
     if (!modelLoaded) {
-      if (fadeIn) { // Loading fading
+      if (fadeIn) { 
         fadeAlpha += 5;
         if (fadeAlpha >= 255) {
           fadeIn = false;
