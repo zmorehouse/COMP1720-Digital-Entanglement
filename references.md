@@ -1,7 +1,7 @@
 # References
 
 ## Facial Detection & Blink Detection Resources
-Obviously a large part of my sketch revolves around blink detection and facemesh. While I ended up going with the handsfree.js library (and Golan's approach), I did a fair bit of research before deciding on this point. Below are both sketches I used directly within my final work, and some addiitonal points of reference.
+Obviously a large part of my sketch revolves around blink detection and facemesh. While I ended up going with the handsfree.js library (and Golan's approach), I did a fair bit of research before deciding on this point. Below are both sketches I used directly within my final work, and some additional points of reference.
 
 ### Blink Detection
 - [1] Golan Levin. 2022. Blink measurement system in p5.js using Handsfree.js. Retrieved from https://www.youtube.com/watch?v=R7sppRAlxA4
@@ -58,21 +58,21 @@ Obviously a large part of my sketch revolves around blink detection and facemesh
 - [4] p5.glitch.me 2024. Glitch Video Example. Retrieved from https://p5.glitch.me/examples/web/P5L_p5.glitch-video.html
 - [5] Ted Davis. 2020. P5.glitch-almost-everything. Retrieved from https://editor.p5js.org/ffd8/sketches/pckumarhp
 
-## Audio / Ambience
+## Audio / Ambience Used
 - [1] InfamousJase. 2015. Electronic computer room ambience. Retrieved from https://freesound.org/people/InfamousJase/sounds/325523/  
 
 ## Font Used 
 - [1] Studio Dot. 2019. BusMatrix Condensed. Retrieved from https://www.dafont.com/busmatrix-condensed.font 
 
 ## Additional Works & Inspiration
-Several works inspired me to create Digital Entanglement. While Phillip Larkins' Aubade is woven throughout as the core text, I nearly included T.S. Eliot's The Waste Land instead. Both of these poems discuss the fragmentation of modern life - well before technology existed as it does today. 
+Several works inspired me to create Digital Entanglement. While Philip Larkins' Aubade is woven throughout as the core text, I almost included T.S. Eliot's The Waste Land instead. Both of these poems discuss the fragmentation of modern life - well before technology existed as it does today. 
 
-Ryoji Ikeda is a Japanese immersive media artist who I've studied in the past - was also a huge influence, especially in this project. I have taken alot of inspiration from his unique visual style, specifically from micro macro. 
+Ryoji Ikeda is a Japanese immersive media artist who I've studied in the past and was also a huge . I have taken alot of inspiration from his unique visual style, specifically from micro macro. 
 
 Finally, the mentioned sketch from Bestesaylar was the inspiration for the blink technology in the first place. 
 
-- [1] Phillip Larkin. 1977. Aubade. Retrieved from https://www.poetryfoundation.org/poems/48422/aubade-56d229a6e2f07 
-- [2] T.S. Elliot. 1922. The Waste Land. Retrieved from https://www poetryfoundation.org/poems/47311/the-waste-land 
+- [1] Philip Larkin. 1977. Aubade. Retrieved from https://www.poetryfoundation.org/poems/48422/aubade-56d229a6e2f07 
+- [2] T.S. Elliot. 1922. The Waste Land. Retrieved from https://www.poetryfoundation.org/poems/47311/the-waste-land 
 - [3] Ryoji Ikeda. 2022. Micro Macro. Retrieved from https://www.ryojiikeda.com/project/micro_macro/
 - [4] NOWNESS. 2021. Ryoji Ikeda: a hypnotic audio-visual explosion. Retrieved from https://www.youtube.com/watch?v=cywFvcRR-QI 
 - [5] bestesaylar. 2019. Eye tracking eyes. Retrieved from https://editor.p5js.org/bestesaylar/sketches/ogFdasRIc
