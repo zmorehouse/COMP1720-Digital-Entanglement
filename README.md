@@ -1,6 +1,6 @@
 # Digital Entanglement
 
-Winds of Aeolia is an interactive artwork created in p5.js
+Digital Entanglement is an interactive artwork created in p5.js
 
 ## Artists Statement
 
